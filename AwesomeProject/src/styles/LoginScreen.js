@@ -26,11 +26,6 @@ export const styles = StyleSheet.create({
     color: "#212121",
     letterSpacing: 0.3,
   },
-  containerInput: {
-    // display: "flex",
-    // flexDirection: "column",
-    // alignItems: "center",
-  },
   gap: {
     height: 16,
   },

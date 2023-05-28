@@ -1,10 +1,12 @@
 import { useState } from "react";
+import { useNavigation } from "@react-navigation/native";
 import {
   View,
   Text,
   Alert,
   TextInput,
   Platform,
+  ImageBackground,
   TouchableOpacity,
   Keyboard,
   KeyboardAvoidingView,
@@ -17,17 +19,19 @@ const initialState = {
   password: "",
 };
 
-const Login = () => {
+const LoginScreen = () => {
   const [state, setState] = useState(initialState);
   const [isFocused1, setIsFocused1] = useState(false);
   const [isFocused2, setIsFocused2] = useState(false);
   const [isShowPassword, setIsShowPassword] = useState(false);
+  const navigation = useNavigation();
 
   const onLogin = () => {
     if (!state.email || !state.password) {
       Alert.alert("All fields must be filled");
       return;
     }
+    navigation.navigate("Home");
     console.log(state);
     setState(initialState);
   };
@@ -45,13 +49,18 @@ const Login = () => {
   };
 
   return (
-    // <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-    <KeyboardAvoidingView
-      behavior={Platform.OS === "android" ? "padding" : "height"}
-    >
-      <View style={styles.formContainer}>
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        keyboardVerticalOffset={0}
+        behavior={Platform.OS === "android" ? "padding" : ""}
+      >
+        <ImageBackground
+          source={require("../../assets/images/photo-bg.jpg")}
+          style={styles.image}
+        />
         <View style={styles.formBox}>
-          <Text style={styles.formTitle}>Sing In</Text>
+          <Text style={styles.formTitle}>Увійти</Text>
           <View style={styles.containerInput}>
             <TextInput
               value={state.email}
@@ -59,7 +68,7 @@ const Login = () => {
                 setState({ ...state, email: text.trim() })
               }
               keyboardType="email-address"
-              placeholder="Email"
+              placeholder="Адреса електронної пошти"
               style={[styles.input, isFocused1 && styles.focusedInput]}
               onFocus={handleFocus1}
             />
@@ -71,32 +80,31 @@ const Login = () => {
                   setState({ ...state, password: text.trim() })
                 }
                 autoComplete="password"
-                placeholder="Password"
+                placeholder="Пароль"
                 style={[styles.input, isFocused2 && styles.focusedInput]}
                 onFocus={handleFocus2}
                 secureTextEntry={!isShowPassword}
               />
               <TouchableOpacity style={styles.showButton} onPress={handleShow}>
                 <Text style={styles.showButtonText}>
-                  {!isShowPassword ? "Show" : "Hide"}
+                  {!isShowPassword ? "Показати" : "Скрити"}
                 </Text>
               </TouchableOpacity>
             </View>
           </View>
           <TouchableOpacity style={styles.button} onPress={onLogin}>
-            <Text style={styles.buttonText}>Log In</Text>
+            <Text style={styles.buttonText}>Увійти</Text>
           </TouchableOpacity>
-          <TouchableOpacity>
+          <TouchableOpacity onPress={() => navigation.navigate("Registration")}>
             <Text style={styles.textNavRegister}>
-              Don't have an account?{" "}
-              <Text style={styles.textRvegister}>Register</Text>
+              Немає акаунту?{" "}
+              <Text style={styles.textRvegister}>Зареєструватися</Text>
             </Text>
           </TouchableOpacity>
         </View>
-      </View>
-    </KeyboardAvoidingView>
-    // </TouchableWithoutFeedback>
+      </KeyboardAvoidingView>
+    </TouchableWithoutFeedback>
   );
 };
 
-export default Login;
+export default LoginScreen;

@@ -1,20 +1,14 @@
 import { StyleSheet } from "react-native";
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    position: "relative",
-
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  containerForm: {
-    position: "relative",
+  scrollViewContainer: {
+    flexGrow: 1,
+    justifyContent: "flex-end",
   },
   registrationContainer: {
     flex: 1,
     position: "absolute",
-    transform: [{ translateX: -200 }, { translateY: 210 }],
+    transform: [{ translateY: 210 }],
     width: 400,
     height: 600,
     borderTopLeftRadius: 25,
@@ -23,6 +17,16 @@ const styles = StyleSheet.create({
     paddingTop: 92,
     paddingBottom: 45,
     paddingHorizontal: 16,
+  },
+  image: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    width: 432,
+    height: 932,
+    flex: 1,
+    justifyContent: "center",
+    resizeMode: "cover",
   },
   photoContainer: {
     position: "absolute",

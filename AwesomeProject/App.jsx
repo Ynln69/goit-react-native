@@ -1,8 +1,11 @@
-import { View, ImageBackground } from "react-native";
+import { NavigationContainer } from "@react-navigation/native";
+import { createStackNavigator } from "@react-navigation/stack";
 import { useFonts } from "expo-font";
-import { styles } from "./AppStyles";
-import Login from "./src/Screens/LoginScreen";
+import { Button } from "react-native";
+
+import LoginScreen from "./src/Screens/LoginScreen";
 import RegisterScreen from "./src/Screens/RegistrationScreen";
+import Home from "./src/Screens/Home";
 
 export default function App() {
   const [fontsLoaded] = useFonts({
@@ -12,15 +15,20 @@ export default function App() {
   if (!fontsLoaded) {
     return null;
   }
+
+  const MainStack = createStackNavigator();
+
   return (
-    <View>
-      <ImageBackground
-        source={require("./assets/images/photo-bg.jpg")}
-        resizeMode="cover"
-        style={styles.image}
-      />
-      <Login />
-      {/* <RegisterScreen /> */}
-    </View>
+    <NavigationContainer>
+      <MainStack.Navigator
+        screenOptions={{
+          headerShown: false,
+        }}
+      >
+        {/* <MainStack.Screen name="Login" component={LoginScreen} />
+        <MainStack.Screen name="Registration" component={RegisterScreen} /> */}
+        <MainStack.Screen name="Home" component={Home} />
+      </MainStack.Navigator>
+    </NavigationContainer>
   );
 }

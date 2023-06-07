@@ -42,10 +42,10 @@ export const styles = StyleSheet.create({
     color: "#212121",
     fontWeight: "400",
   },
-  userPictureBox: {
-    marginBottom: 32,
+  userPictureContainer: {
+    marginBottom: 50,
   },
-  addPicture: {
+  userAddedPicture: {
     width: "100%",
     height: 240,
     borderRadius: 8,
@@ -59,19 +59,19 @@ export const styles = StyleSheet.create({
     marginTop: 8,
     marginBottom: 10,
   },
-  comments: {
+  numberComments: {
     color: "#BDBDBD",
   },
-  descriptionImg: {
+  pictureDescription: {
     display: "flex",
     flexDirection: "row",
     justifyContent: "space-between",
   },
-  commentsImg: {
+  pictureComments: {
     display: "flex",
     flexDirection: "row",
   },
-  placeImg: {
+  picturePlace: {
     display: "flex",
     flexDirection: "row",
   },

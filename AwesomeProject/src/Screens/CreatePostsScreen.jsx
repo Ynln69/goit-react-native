@@ -10,9 +10,11 @@ import {
   KeyboardAvoidingView,
   TouchableWithoutFeedback,
   Keyboard,
+  Platform,
 } from "react-native";
 import { Camera } from "expo-camera";
 import * as Location from "expo-location";
+import { Permissions } from "expo-permissions";
 import { MaterialIcons, Feather } from "@expo/vector-icons";
 import { styles } from "../styles/createPostScreen";
 
@@ -50,11 +52,22 @@ const CreatePostsScreen = () => {
     }
   };
 
+  const getCameraPermission = async () => {
+    const { status } = await Permissions.askAsync(Permissions.CAMERA);
+    if (status !== "granted") {
+      console.log("Error: Camera permission not granted");
+    }
+  };
+
+  useEffect(() => {
+    getCameraPermission();
+  }, []);
+
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <KeyboardAvoidingView
         style={styles.container}
-        behavior={Platform.OS == "android" ? "padding" : ""}
+        behavior={Platform.OS === "android" ? "padding" : ""}
       >
         <ScrollView style={styles.scrollContainer}>
           <Camera style={styles.camera} ref={setCamera}>
@@ -66,21 +79,16 @@ const CreatePostsScreen = () => {
                 />
               </View>
             )}
-            {photo ? (
-              <TouchableOpacity
-                style={styles.addPictureBtnTr}
-                onPress={takePhoto}
-              >
-                <MaterialIcons name="photo-camera" size={20} color="#FFFFFF" />
-              </TouchableOpacity>
-            ) : (
-              <TouchableOpacity
-                style={styles.addPictureBtn}
-                onPress={takePhoto}
-              >
-                <MaterialIcons name="photo-camera" size={20} color="#BDBDBD" />
-              </TouchableOpacity>
-            )}
+            <TouchableOpacity
+              style={photo ? styles.addPictureBtnTr : styles.addPictureBtn}
+              onPress={takePhoto}
+            >
+              <MaterialIcons
+                name="photo-camera"
+                size={20}
+                color={photo ? "#FFFFFF" : "#BDBDBD"}
+              />
+            </TouchableOpacity>
           </Camera>
           <Text style={styles.editPicture}>
             {photo ? "Редагувати фото" : "Завантажити фото"}
@@ -105,18 +113,14 @@ const CreatePostsScreen = () => {
               style={styles.placeIcon}
             />
           </View>
-          {photo ? (
-            <TouchableOpacity
-              style={styles.buttonActive}
-              onPress={handlePublish}
-            >
-              <Text style={styles.textActive}>Опубліковати</Text>
-            </TouchableOpacity>
-          ) : (
-            <TouchableOpacity style={styles.buttonPost}>
-              <Text style={styles.textPost}>Опубліковати</Text>
-            </TouchableOpacity>
-          )}
+          <TouchableOpacity
+            style={photo ? styles.buttonActive : styles.buttonPost}
+            onPress={handlePublish}
+          >
+            <Text style={photo ? styles.textActive : styles.textPost}>
+              Опубліковати
+            </Text>
+          </TouchableOpacity>
           <View style={styles.removeContainer}>
             <TouchableOpacity style={styles.removeBtn}>
               <Feather

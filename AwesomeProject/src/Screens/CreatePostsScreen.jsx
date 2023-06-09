@@ -15,7 +15,7 @@ import {
 
 import { Camera } from "expo-camera";
 import * as Location from "expo-location";
-import { MaterialIcons, Feather } from "@expo/vector-icons";
+import { MaterialIcons, Feather, AntDesign } from "@expo/vector-icons";
 import * as MediaLibrary from "expo-media-library";
 import { useNavigation } from "@react-navigation/native";
 import { useDispatch } from "react-redux";
@@ -179,7 +179,7 @@ const CreatePostsScreen = () => {
                       );
                     }}
                   >
-                    <Text style={{ fontSize: 18, color: "white" }}>Flip</Text>
+                    <AntDesign name="retweet" size={24} color="#fff" />
                   </TouchableOpacity>
                 </View>
               </Camera>

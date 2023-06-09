@@ -1,18 +1,27 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet, Dimensions } from "react-native";
+import { View, StyleSheet, Dimensions } from "react-native";
 import MapView, { Marker } from "react-native-maps";
 import * as Location from "expo-location";
 import { useRoute } from "@react-navigation/native";
 
-export const MapScreen = () => {
+const MapScreen = () => {
   const route = useRoute();
-  const [location, setLocation] = useState("");
+  const { geo } = route.params;
+  const [location, setLocation] = useState(geo);
 
   return (
     <View style={styles.container}>
-      <MapView style={styles.mapStyle} showsUserLocation={true}>
+      <MapView
+        style={styles.mapStyle}
+        region={{
+          ...location,
+          latitudeDelta: 0.0922,
+          longitudeDelta: 0.0421,
+        }}
+        showsUserLocation={true}
+      >
         {location && (
-          <Marker title="I am here" coordinate={location} description="Hello" />
+          <Marker title="I am here" coordinate={location} description="Hi" />
         )}
       </MapView>
     </View>
@@ -31,3 +40,5 @@ const styles = StyleSheet.create({
     height: Dimensions.get("window").height,
   },
 });
+
+export default MapScreen;

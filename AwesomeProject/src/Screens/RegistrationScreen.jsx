@@ -1,5 +1,3 @@
-import { useState } from "react";
-import { useNavigation } from "@react-navigation/native";
 import {
   View,
   Image,
@@ -13,30 +11,30 @@ import {
   KeyboardAvoidingView,
   TouchableWithoutFeedback,
 } from "react-native";
-import styles from "../styles/RegistrationScreen";
+import { useState, useReducer } from "react";
+import { useNavigation } from "@react-navigation/native";
+import { useDispatch } from "react-redux";
+import { register } from "../redux/operations";
+import { reducer } from "../redux/reduserRegistLog";
 
-const initialState = {
-  userName: "",
-  email: "",
-  password: "",
-};
+import SubmitButton from "../Commponents/SubmitButton";
+import styles from "../styles/registrationScreen";
 
 const RegisterScreen = () => {
-  const [state, setState] = useState(initialState);
+  const dispatchRedax = useDispatch();
+
+  const navigation = useNavigation();
+  const [state, dispatch] = useReducer(reducer, {
+    name: "",
+    email: "",
+    password: "",
+  });
+
   const [isFocused1, setIsFocused1] = useState(false);
   const [isFocused2, setIsFocused2] = useState(false);
   const [isFocused3, setIsFocused3] = useState(false);
   const [isShowPassword, setIsShowPassword] = useState(false);
-  const navigation = useNavigation();
 
-  const onLogin = () => {
-    if (!state.userName || !state.email || !state.password) {
-      Alert.alert("All fields must be filled");
-      return;
-    }
-    console.log(state);
-    setState(initialState);
-  };
   const handleFocus1 = () => {
     setIsFocused1(true);
     setIsFocused2(false);
@@ -54,6 +52,45 @@ const RegisterScreen = () => {
   };
   const handleShow = () => {
     setIsShowPassword(!isShowPassword);
+  };
+
+  const handleFormSubmit = () => {
+    try {
+      console.debug(
+        `Hello ${state.name}, you have entered your email: ${state.email}, and password: ${state.password}`
+      );
+      dispatchRedax(
+        register({
+          name: state.name,
+          email: state.email,
+          password: state.password,
+        })
+      ).then((registerResult) => {
+        if (registerResult.payload) {
+          db.collection("users")
+            .doc(registerResult.payload.uid)
+            .set({
+              name: state.name,
+              email: state.email,
+              posts: [],
+            })
+            .then(() => {
+              console.log("Дані користувача збережені у базі даних");
+              dispatch({ type: "reset" });
+              navigation.navigate("Login");
+            })
+            .catch((error) => {
+              console.error("Помилка збереження даних користувача:", error);
+              Alert.alert("Помилка збереження даних, спробуйте ще раз");
+            });
+        } else {
+          Alert.alert("Такий email вже зареєстрований");
+        }
+      });
+    } catch (error) {
+      console.error("Error during registration:", error);
+      Alert.alert("Something went wrong, please try again");
+    }
   };
 
   return (
@@ -76,18 +113,26 @@ const RegisterScreen = () => {
           </View>
           <Text style={styles.registerTitle}>Реєстрація</Text>
           <TextInput
-            onChangeText={(text) =>
-              setState({ ...state, userName: text.trim() })
-            }
-            value={state.userName}
+            value={state.name}
+            onChangeText={(e) => {
+              dispatch({
+                type: "name",
+                newName: e,
+              });
+            }}
             placeholder="Логін"
             style={[styles.input, isFocused1 && styles.focusedInput]}
             onFocus={handleFocus1}
           />
           <View style={styles.gap} />
           <TextInput
-            onChangeText={(text) => setState({ ...state, email: text.trim() })}
             value={state.email}
+            onChangeText={(e) => {
+              dispatch({
+                type: "email",
+                newEmail: e,
+              });
+            }}
             keyboardType="email-address"
             placeholder="Адреса електронної пошти"
             style={[styles.input, isFocused2 && styles.focusedInput]}
@@ -96,10 +141,13 @@ const RegisterScreen = () => {
           <View style={styles.gap} />
           <View style={styles.passwordInputContainer}>
             <TextInput
-              onChangeText={(text) =>
-                setState({ ...state, password: text.trim() })
-              }
               value={state.password}
+              onChangeText={(e) => {
+                dispatch({
+                  type: "password",
+                  newPassword: e,
+                });
+              }}
               placeholder="Пароль"
               style={[styles.input, isFocused3 && styles.focusedInput]}
               onFocus={handleFocus3}
@@ -111,9 +159,12 @@ const RegisterScreen = () => {
               </Text>
             </TouchableOpacity>
           </View>
-          <TouchableOpacity style={styles.button} onPress={onLogin}>
-            <Text style={styles.buttonText}>Зареєстуватися</Text>
-          </TouchableOpacity>
+          <SubmitButton
+            title={"Зареєстуватися"}
+            onPress={() => {
+              handleFormSubmit();
+            }}
+          ></SubmitButton>
           <TouchableOpacity onPress={() => navigation.navigate("Login")}>
             <Text style={styles.textNavRegister}>
               Вже є акаунт?

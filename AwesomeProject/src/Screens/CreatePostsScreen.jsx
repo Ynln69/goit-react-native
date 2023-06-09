@@ -1,5 +1,4 @@
-import { useNavigation } from "@react-navigation/native";
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import {
   View,
   ScrollView,
@@ -11,57 +10,85 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
   Platform,
+  Alert,
 } from "react-native";
+
 import { Camera } from "expo-camera";
 import * as Location from "expo-location";
-import { Permissions } from "expo-permissions";
 import { MaterialIcons, Feather } from "@expo/vector-icons";
+import * as MediaLibrary from "expo-media-library";
+import { useNavigation } from "@react-navigation/native";
+import { useDispatch } from "react-redux";
+
+import { addUserPost } from "../redux/operations";
+import SumbitButton from "../Commponents/SubmitButton";
 import { styles } from "../styles/createPostScreen";
 
 const CreatePostsScreen = () => {
+  const dispatch = useDispatch();
+
   const navigation = useNavigation();
-  const [camera, setCamera] = useState(null);
-  const [photo, setPhoto] = useState(null);
-  const [postName, setPostName] = useState("");
-  const [postPlace, setPostPlace] = useState("");
-  const [location, setLocation] = useState(null);
+  const [hasPermission, setHasPermission] = useState(null);
+  const [cameraRef, setCameraRef] = useState(null);
+  const [type, setType] = useState(Camera.Constants.Type.back);
 
-  const takePhoto = async () => {
-    const photo = await camera.takePictureAsync();
-    console.log(photo);
-    setPhoto(photo.uri);
-  };
-
-  const handlePublish = async () => {
-    if (photo) {
-      const { status } = await Location.requestForegroundPermissionsAsync();
-      if (status === "granted") {
-        const location = await Location.getCurrentPositionAsync({});
-        setLocation(location);
-      }
-      const post = {
-        photo: photo,
-        name: postName,
-        place: postPlace,
-        location: location,
-      };
-      console.log("Publishing post:", post);
-      navigation.navigate("Публікації");
-    } else {
-      console.log("Error: No photo available.");
-    }
-  };
-
-  const getCameraPermission = async () => {
-    const { status } = await Permissions.askAsync(Permissions.CAMERA);
-    if (status !== "granted") {
-      console.log("Error: Camera permission not granted");
-    }
-  };
+  const [post, setPost] = useState({
+    picture: "",
+    title: "",
+    place: "",
+    geo: null,
+    comments: [],
+    likes: 0,
+  });
 
   useEffect(() => {
-    getCameraPermission();
+    (async () => {
+      const { status } = await Camera.requestCameraPermissionsAsync();
+      await MediaLibrary.requestPermissionsAsync();
+
+      setHasPermission(status === "granted");
+    })();
+
+    hendleGeoLocation();
   }, []);
+
+  const hendleGeoLocation = async () => {
+    let { status } = await Location.requestForegroundPermissionsAsync();
+    if (status !== "granted") {
+      console.log("Permission to access location was denied");
+    }
+
+    let location = await Location.getCurrentPositionAsync({});
+    const coords = {
+      latitude: location.coords.latitude,
+      longitude: location.coords.longitude,
+    };
+
+    setPost((prevPost) => {
+      return {
+        ...post,
+        geo: coords,
+      };
+    });
+  };
+
+  const handleSubmitAddPost = async () => {
+    try {
+      await dispatch(addUserPost(post));
+
+      setPost((prevState) => {
+        return {
+          picture: "",
+          title: "",
+          place: "",
+          geo: null,
+          comments: [],
+          likes: 0,
+        };
+      });
+      navigation.navigate("Публікації");
+    } catch (error) {}
+  };
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
@@ -70,41 +97,123 @@ const CreatePostsScreen = () => {
         behavior={Platform.OS === "android" ? "padding" : ""}
       >
         <ScrollView style={styles.scrollContainer}>
-          <Camera style={styles.camera} ref={setCamera}>
-            {photo && (
-              <View style={styles.pictureContainer}>
-                <Image
-                  source={{ uri: photo }}
-                  style={{ height: 240, width: "100%" }}
+          {hasPermission === null || hasPermission === false ? (
+            <View style={styles.userPictureContainer}>
+              <Image style={styles.addedPicture} />
+              <TouchableOpacity
+                style={
+                  post.picture ? styles.addPictureBtnTr : styles.addPictureBtn
+                }
+              >
+                <MaterialIcons
+                  name="photo-camera"
+                  size={20}
+                  color={post.picture ? "#FFFFFF" : "#BDBDBD"}
                 />
-              </View>
-            )}
-            <TouchableOpacity
-              style={photo ? styles.addPictureBtnTr : styles.addPictureBtn}
-              onPress={takePhoto}
-            >
-              <MaterialIcons
-                name="photo-camera"
-                size={20}
-                color={photo ? "#FFFFFF" : "#BDBDBD"}
+              </TouchableOpacity>
+            </View>
+          ) : post.picture ? (
+            <View style={styles.userPictureContainer}>
+              <Image
+                source={{ uri: post.picture }}
+                style={styles.addedPicture}
               />
-            </TouchableOpacity>
-          </Camera>
-          <Text style={styles.editPicture}>
-            {photo ? "Редагувати фото" : "Завантажити фото"}
+              <TouchableOpacity
+                style={
+                  post.picture ? styles.addPictureBtnTr : styles.addPictureBtn
+                }
+                onPress={() => {
+                  setPost((prevPost) => {
+                    return {
+                      ...post,
+                      picture: "",
+                    };
+                  });
+                }}
+              >
+                <MaterialIcons
+                  name="photo-camera"
+                  size={20}
+                  color={post.picture ? "#FFFFFF" : "#BDBDBD"}
+                />
+              </TouchableOpacity>
+            </View>
+          ) : (
+            <View style={styles.userPictureContainer}>
+              <Camera style={styles.camera} type={type} ref={setCameraRef}>
+                <View style={styles.photoView}>
+                  <TouchableOpacity
+                    style={
+                      post.picture
+                        ? styles.addPictureBtnTr
+                        : styles.addPictureBtn
+                    }
+                    onPress={async () => {
+                      if (cameraRef) {
+                        const { uri } = await cameraRef.takePictureAsync();
+                        await MediaLibrary.createAssetAsync(uri);
+                        console.debug(uri);
+
+                        setPost((prevPost) => {
+                          return {
+                            ...post,
+                            picture: uri,
+                          };
+                        });
+                      }
+                    }}
+                  >
+                    <MaterialIcons
+                      name="photo-camera"
+                      size={20}
+                      color={post.picture ? "#FFFFFF" : "#BDBDBD"}
+                    />
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={styles.flipContainer}
+                    onPress={() => {
+                      setType(
+                        type === Camera.Constants.Type.back
+                          ? Camera.Constants.Type.front
+                          : Camera.Constants.Type.back
+                      );
+                    }}
+                  >
+                    <Text style={{ fontSize: 18, color: "white" }}>Flip</Text>
+                  </TouchableOpacity>
+                </View>
+              </Camera>
+            </View>
+          )}
+          <Text style={styles.editPicturePrg}>
+            {post.picture ? "Редагувати фото" : "Завантажте фото"}
           </Text>
           <TextInput
-            style={styles.inputName}
+            style={styles.placeNameInput}
             placeholder="Назва..."
-            value={postName}
-            onChangeText={setPostName}
+            value={post.title}
+            onChangeText={(e) => {
+              setPost((prevPost) => {
+                return {
+                  ...post,
+                  title: e,
+                };
+              });
+            }}
           />
           <View>
             <TextInput
-              style={styles.inputPlace}
+              style={styles.placeInput}
               placeholder="Місцевість..."
-              value={postPlace}
-              onChangeText={setPostPlace}
+              value={post.place}
+              onChangeText={(e) => {
+                setPost((prevPost) => {
+                  return {
+                    ...post,
+                    place: e,
+                  };
+                });
+              }}
             />
             <MaterialIcons
               name="place"
@@ -113,24 +222,37 @@ const CreatePostsScreen = () => {
               style={styles.placeIcon}
             />
           </View>
-          <TouchableOpacity
-            style={photo ? styles.buttonActive : styles.buttonPost}
-            onPress={handlePublish}
-          >
-            <Text style={photo ? styles.textActive : styles.textPost}>
-              Опубліковати
-            </Text>
-          </TouchableOpacity>
+          {post.picture && post.title && post.place ? (
+            <SumbitButton
+              title="Опубліковати"
+              onPress={() => {
+                handleSubmitAddPost();
+              }}
+            />
+          ) : (
+            <SumbitButton
+              bgColor="#F6F6F6"
+              textColor="#BDBDBD"
+              title="Опубліковати"
+              onPress={() => {
+                Alert.alert("Заполніть усі поля");
+              }}
+            />
+          )}
           <View style={styles.removeContainer}>
-            <TouchableOpacity style={styles.removeBtn}>
-              <Feather
-                name="trash-2"
-                size={24}
-                color="#DADADA"
-                onPress={() => {
-                  setPhoto(null);
-                }}
-              />
+            <TouchableOpacity
+              style={styles.removeBtn}
+              onPress={() => {
+                setPost((prevPost) => {
+                  return {
+                    picture: "",
+                    title: "",
+                    place: "",
+                  };
+                });
+              }}
+            >
+              <Feather name="trash-2" size={24} color="#DADADA" />
             </TouchableOpacity>
           </View>
         </ScrollView>

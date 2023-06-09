@@ -1,18 +1,12 @@
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import {
-  Ionicons,
-  Feather,
-  AntDesign,
-  MaterialCommunityIcons,
-} from "@expo/vector-icons";
+import { Ionicons, Feather, AntDesign } from "@expo/vector-icons";
 
 import PostsScreen from "./PostsScreen";
 import CreatePostsScreen from "./CreatePostsScreen";
 import CommentsScreen from "./CommentsScreen";
 import ProfileScreen from "./ProfileScreen";
-import { MapScreen } from "./MapScreen";
 
 const MainTab = createBottomTabNavigator();
 
@@ -23,8 +17,7 @@ const Home = () => {
         headerLeft: () => {
           if (
             route.name === "Коментарі" ||
-            route.name === "Створити публікацію" ||
-            route.name === "Map"
+            route.name === "Створити публікацію"
           ) {
             return (
               <Ionicons

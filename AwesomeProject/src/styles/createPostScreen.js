@@ -3,142 +3,121 @@ import { StyleSheet } from "react-native";
 export const styles = StyleSheet.create({
   container: {
     flex: 1,
-    borderStyle: "solid",
-    borderTopWidth: 1,
 
     backgroundColor: "#FFFFFF",
+    borderStyle: "solid",
     borderTopColor: "#EEE",
+    borderTopWidth: 1,
   },
   scrollContainer: {
     paddingTop: 32,
     paddingLeft: 16,
     paddingRight: 16,
   },
-  camera: {
-    position: "relative",
-    height: 240,
+  userPictureContainer: {
     width: "100%",
-    alignItems: "center",
-    justifyContent: "center",
-
-    backgroundColor: "#F6F6F6",
-  },
-
-  pictureContainer: {
     height: 240,
-    width: "100%",
+    marginBottom: 8,
     borderRadius: 8,
 
-    borderColor: "#E8E8E8",
-    backgroundColor: "#F6F6F6",
+    justifyContent: "center",
+    alignItems: "center",
   },
-
+  addedPicture: {
+    width: "100%",
+    height: "100%",
+    borderRadius: 8,
+    backgroundColor: "#E8E8E8",
+  },
   addPictureBtn: {
     position: "absolute",
-    top: 90,
-    left: "42%",
     width: 60,
     height: 60,
-    alignItems: "center",
     justifyContent: "center",
-    borderRadius: 50,
-    zIndex: 1,
-
-    backgroundColor: "#FFFFFF",
+    alignItems: "center",
+    backgroundColor: "#FFF",
+    borderRadius: 30,
   },
   addPictureBtnTr: {
     position: "absolute",
-    top: 90,
-    left: "42%",
     width: 60,
     height: 60,
-    alignItems: "center",
     justifyContent: "center",
-    borderRadius: 50,
-    zIndex: 1,
+    alignItems: "center",
+    borderRadius: 30,
 
-    backgroundColor: " rgba(255, 255, 255, 0.3);",
+    backgroundColor: "rgba(255, 255, 255, 0.3)",
   },
-
-  editPicture: {
+  editPicturePrg: {
     color: "#BDBDBD",
     fontFamily: "RobotoRegular",
     fontSize: 16,
     lineHeight: 19,
-    marginTop: 8,
     marginBottom: 48,
   },
-
-  inputName: {
-    fontFamily: "RobotoRegular",
-    fontSize: 16,
-    lineHeight: 19,
-    color: "#212121",
+  placeNameInput: {
     borderStyle: "solid",
     borderBottomColor: "#E8E8E8",
     borderBottomWidth: 1,
     paddingBottom: 15,
     marginBottom: 32,
-  },
 
-  inputPlace: {
+    color: "#212121",
     fontFamily: "RobotoRegular",
     fontSize: 16,
     lineHeight: 19,
-    color: "#212121",
+  },
+  placeInput: {
     borderStyle: "solid",
     borderBottomColor: "#E8E8E8",
     borderBottomWidth: 1,
     paddingBottom: 15,
     paddingLeft: 28,
     marginBottom: 32,
-  },
 
+    color: "#212121",
+    fontFamily: "RobotoRegular",
+    fontSize: 16,
+    lineHeight: 19,
+  },
   placeIcon: {
     position: "absolute",
     top: 3,
   },
-
   removeContainer: {
     width: "100%",
     justifyContent: "center",
     alignItems: "center",
-    marginTop: 62,
+    marginBottom: 32,
   },
-
   removeBtn: {
+    borderRadius: 20,
+    marginBottom: 20,
     justifyContent: "center",
     alignItems: "center",
     width: 70,
     height: 40,
-    borderRadius: 20,
-    marginBottom: 20,
+
     backgroundColor: "#F6F6F6",
   },
-
-  buttonPost: {
-    alignItems: "center",
-    padding: 16,
+  camera: {
     width: "100%",
-    borderRadius: 100,
-    marginBottom: 16,
-    backgroundColor: "#F6F6F6",
+    height: "100%",
+    borderRadius: 8,
   },
-  buttonActive: {
-    alignItems: "center",
-    padding: 16,
+  photoView: {
     width: "100%",
-    borderRadius: 100,
-    marginBottom: 16,
-    backgroundColor: "#FF6C00",
-  },
+    height: "100%",
+    borderRadius: 8,
+    justifyContent: "center",
+    alignItems: "center",
 
-  textPost: {
-    color: "#BDBDBD",
-    fontSize: 16,
+    backgroundColor: "transparent",
   },
-  textActive: {
-    color: "#FFFFFF",
-    fontSize: 16,
+  flipContainer: {
+    position: "absolute",
+    bottom: 0,
+    right: 0,
+    padding: 15,
   },
 });

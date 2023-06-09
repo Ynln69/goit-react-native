@@ -74,6 +74,7 @@ const styles = StyleSheet.create({
   },
   passwordInputContainer: {
     position: "relative",
+    marginBottom: 48,
   },
   showButton: {
     position: "absolute",
@@ -83,24 +84,6 @@ const styles = StyleSheet.create({
   showButtonText: {
     fontFamily: "RobotoRegular",
     color: "#1B4371",
-  },
-  button: {
-    width: 344,
-    height: 50,
-    alignSelf: "center",
-    backgroundColor: "#FF6C00",
-    paddingVertical: 16,
-    paddingHorizontal: 32,
-    borderRadius: 100,
-    marginTop: 43,
-    marginBottom: 16,
-  },
-  buttonText: {
-    color: "#FFFFFF",
-    alignSelf: "center",
-    fontWeight: 400,
-    fontSize: 16,
-    lineHeight: 19,
   },
   textNavRegister: {
     fontFamily: "RobotoRegular",

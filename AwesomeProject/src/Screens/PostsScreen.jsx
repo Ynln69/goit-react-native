@@ -1,10 +1,24 @@
+import React from "react";
 import { useNavigation } from "@react-navigation/native";
 import { View, Text, ScrollView, Image, TouchableOpacity } from "react-native";
-import { styles } from "../styles/PostsScreen";
+import { useSelector } from "react-redux";
+import { selectUser, selectPosts } from "../redux/selectors";
+import { styles } from "../styles/postsScreen";
 import { EvilIcons, MaterialIcons } from "@expo/vector-icons";
 
-const PostsScreen = ({ photo }) => {
+const PostsScreen = () => {
   const navigation = useNavigation();
+  const { name, email } = useSelector(selectUser);
+  const posts = useSelector(selectPosts);
+
+  const navigateToComments = (post) => {
+    navigation.navigate("Коментарі", { post });
+  };
+
+  const navigateToMap = (geo) => {
+    navigation.navigate("Map", { geo });
+  };
+
   return (
     <ScrollView style={styles.container}>
       <View style={styles.userContainer}>
@@ -15,39 +29,43 @@ const PostsScreen = ({ photo }) => {
           />
         </View>
         <View style={styles.userNameBox}>
-          <Text style={styles.userName}>Name</Text>
-          <Text style={styles.userEmail}>Email</Text>
+          <Text style={styles.userName}>{name}</Text>
+          <Text style={styles.userEmail}>{email}</Text>
         </View>
       </View>
-
-      <View style={styles.userPictureContainer}>
-        <Image style={styles.userAddedPicture} source={photo} />
-        <View>
-          <Text style={styles.pictureName}>Forest</Text>
-          <View style={styles.pictureDescription}>
-            <View style={styles.pictureComments}>
+      {posts.map((post, index) => (
+        <View
+          style={styles.userPictureContainer}
+          key={`${post.picture}-${index}`}
+        >
+          <Image
+            style={styles.userAddedPicture}
+            source={{ uri: post.picture }}
+          />
+          <View>
+            <Text style={styles.pictureName}>{post.title}</Text>
+            <View style={styles.pictureDescription}>
+              <View style={styles.pictureComments}>
+                <TouchableOpacity onPress={() => navigateToComments(post)}>
+                  <EvilIcons name="comment" size={24} color="#BDBDBD" />
+                </TouchableOpacity>
+                <Text style={styles.numberComments}>
+                  {post.comments.length}
+                </Text>
+              </View>
               <TouchableOpacity
-                onPress={() => {
-                  navigation.navigate("Коментарі");
-                }}
+                style={styles.picturePlace}
+                onPress={() => navigateToMap(post.geo)}
               >
-                <EvilIcons name="comment" size={24} color="#BDBDBD" />
+                <MaterialIcons name="place" size={24} color="#BDBDBD" />
+                <Text>{post.place}</Text>
               </TouchableOpacity>
-              <Text style={styles.numberComments}>15</Text>
             </View>
-            <TouchableOpacity
-              style={styles.picturePlace}
-              onPress={() => {
-                navigation.navigate("Map");
-              }}
-            >
-              <MaterialIcons name="place" size={24} color="#BDBDBD" />
-              <Text>Ukraine</Text>
-            </TouchableOpacity>
           </View>
         </View>
-      </View>
+      ))}
     </ScrollView>
   );
 };
+
 export default PostsScreen;

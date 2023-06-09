@@ -52,6 +52,7 @@ export const styles = StyleSheet.create({
   },
   passwordInputContainer: {
     position: "relative",
+    marginBottom: 48,
   },
   showButton: {
     position: "absolute",

@@ -56,9 +56,6 @@ const RegisterScreen = () => {
 
   const handleFormSubmit = () => {
     try {
-      console.debug(
-        `Hello ${state.name}, you have entered your email: ${state.email}, and password: ${state.password}`
-      );
       dispatchRedax(
         register({
           name: state.name,
@@ -75,7 +72,6 @@ const RegisterScreen = () => {
               posts: [],
             })
             .then(() => {
-              console.log("Дані користувача збережені у базі даних");
               dispatch({ type: "reset" });
               navigation.navigate("Login");
             })

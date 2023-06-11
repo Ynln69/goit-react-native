@@ -13,7 +13,6 @@ export const register = createAsyncThunk(
   "user/register",
   async (credentials) => {
     try {
-      console.log(credentials);
       const { name, email, password } = credentials;
       const userCredential = await createUserWithEmailAndPassword(
         auth,
